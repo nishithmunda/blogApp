@@ -1,0 +1,4 @@
+AWSAccessKeyId=AKIAJYNYFBPXP7SBX4WA
+AWSSecretKey=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
+Bucket=amplify-uploadaudio-audio-181825-deployment
+
