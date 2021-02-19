@@ -2,16 +2,16 @@ import DisplayPosts from './components/DisplayPosts'
 import './App.css';
 import CreatePost from './components/CreatePost'
 import { withAuthenticator } from "aws-amplify-react";
-import Authentication from './components/Authentication'
-import ForgotPassword from './components/ForgotPassword'
+// import Authentication from './components/Authentication'
+// import ForgotPassword from './components/ForgotPassword'
 function App() {
   return (
     <div className="App">
-     <Authentication/>   
+     {/* <Authentication/>    */}
      {/* <ForgotPassword/> */}
      {/* <ForgotPassword/> */}
-       {/* <CreatePost/>
-       <DisplayPosts/> */}
+       <CreatePost/>
+       <DisplayPosts/>
     </div>
   );
 }
