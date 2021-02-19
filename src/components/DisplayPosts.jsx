@@ -32,6 +32,9 @@ function DisplayPosts(){
     <li className="card" key={Posts.id}>
         <div className="post-content">
             {Posts.postTitle}</div>
+
+        <div>
+            {Posts.postBody}</div>    
         <div className="post-button">
             <EditPost/><DeletePost/>
         </div>

@@ -74,6 +74,7 @@ const CreatePost=()=>{
                    required
                    value={postTitle}
                    onChange={onChangepostTitle}
+                   placeholder="blog_title"
             />
             <textarea type="text"
                       name="postBody" 
