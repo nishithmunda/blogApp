@@ -1,53 +1,38 @@
 import { API, graphqlOperation,Auth } from 'aws-amplify'
-import React, { useState,useEffect} from 'react'
+import React, { useState,useEffect, useRef} from 'react'
 import { createPost } from '../graphql/mutations'
 
 const CreatePost=()=>{
 
-    const[postOwnerId,setpostOwnerId]=useState("")
-    const[postOwnerUsername,setpostOwnerUsername]=useState("")
-    const[postTitle,setpostTitle]=useState("")
-    const[postBody,setpostBody]=useState("")
-
-    // const [state , setState] = useState({
-    //     postOwnerId :" ",
-    //     postOwnerUsername:" ",
-    //     postTitle:" ",
-    //     postBody:"",
-
-    // })
-    useEffect(
-              async ()=>{
+    const initialFormstate={
+           postOwnerId:'',
+           postOwnerUsername:'',
+           postTitle:'',
+           postBody:''
+    }
+    const [formState,updateFormState]=useState(initialFormstate)
+    function onChange(e){
+            updateFormState(()=>({...formState,[e.target.name]:e.target.value}))        
+                       }
+   useEffect(
+              async ()=>{                
                    await Auth.currentUserInfo()
                    .then(user=>{
                        console.log("current user",user.username)
                        console.log(user)
                        console.log("ID",user.attributes.sub)
-                       
-                        const pOwnerId=user.username;
-                        setpostOwnerId(pOwnerId )
-                      
-                       
-                        const pOwnerUsername=user.attributes.sub;
-                        setpostOwnerUsername(pOwnerUsername)
-                    
+
+                       updateFormState(()=>({...formState,postOwnerId:user.attributes.sub,
+                                                          postOwnerUsername:user.username}))
+
                        
                    })
                },[]
-    )
-
-
-    function onChangepostTitle(e){
-        const pTitle=e.target.value;
-        setpostTitle(pTitle)
-    }
-    function onChangepostBody(e){
-        const pBody=e.target.value;
-        setpostBody(pBody )
-    }
+   )
 
     const handleAddPost=async(event)=>{
          event.preventDefault()
+         const {postOwnerId,postOwnerUsername,postTitle,postBody}=formState
 
          const input={ 
                        postOwnerId:postOwnerId,
@@ -56,24 +41,23 @@ const CreatePost=()=>{
                        postBody:postBody,
                        createdAt:new Date().toISOString() 
                      }
-                     await API.graphql(graphqlOperation(createPost,{input}))
-                       
-                      
+         console.log("INPUT",input)            
+try
+      { await API.graphql(graphqlOperation(createPost,{input}))}
+catch(error){
+    console.log(error)
+}      
+    
+       updateFormState({...formState,postBody:"",postTitle:""})                           
     }
     
-    // const handleChangePost=(event)=>{
-    //         setState({
-    //             [event.target.name]:event.target.value
-    //         })
-    // }
 
     return(
         <form className="add-post" onSubmit={handleAddPost} >
             <input type="text" 
                    name="postTitle"
                    required
-                   value={postTitle}
-                   onChange={onChangepostTitle}
+                   onChange= {onChange}
                    placeholder="blog_title"
             />
             <textarea type="text"
@@ -82,13 +66,13 @@ const CreatePost=()=>{
                       cols="40"
                       placeholder="New Blog Post...."
                       className="post_textbox"
-                      value={postBody}
-                      onChange={onChangepostBody}
+                      onChange={ onChange}
                       
             />
 
-            <input type="submit">
-            </input>
+            <button  type="submit" className="btn">
+                SUBMIT
+            </button>
         </form>
     )
 }

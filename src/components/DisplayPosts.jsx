@@ -8,37 +8,54 @@ import {onCreatePost} from '../graphql/subscriptions'
 function DisplayPosts(){
    
     const[Posts,setPosts]=useState([])
+
+    async function getPosts(){
+        const result= await API.graphql(graphqlOperation(listPosts));
+        setPosts(result.data.listPosts.items);
+    }
     useEffect( ()=>{
-        async function getPosts(){
-            const result= await API.graphql(graphqlOperation(listPosts));
-            setPosts(result.data.listPosts.items);
-        }
          getPosts();
-    //     const createPostListner=API.graphql(graphqlOperation(onCreatePost)).subscribe({
-    //         next:(postData)=>{
-    //            const newPost=postData.value.data.onCreatePost
-    //            const prevPosts=Posts.filter(post=>post.id!== newPost.id)
-    //            const updatedPosts=[newPost,...prevPosts]
-    //            setPosts({Posts:updatedPosts})
-    //         }  
-    //    })
-    //    return()=>{
-    //        createPostListner.unsubscribe()      }
+         const subscription=API.graphql(graphqlOperation(onCreatePost)).subscribe({
+             next:(postData)=>{
+                getPosts()
+                const newPost=postData.value.data.onCreatePost
+                console.log("NewPost ",newPost)
+                const prevPosts=Posts.filter(post=>post.id!== newPost.id)
+                console.log("Previous Post ",prevPosts)
+                const updatedPosts=[newPost,...prevPosts]
+                console.log(updatedPosts)
+                setPosts(updatedPosts)
+             }, 
+             error: error => console.warn(error) 
+        })
+        return()=>{
+             subscription.unsubscribe()  }
     },[])
 
-    // console.log(Posts)
+     console.log(Posts)
     
-    const PList=Posts.map((Posts)=>
+    const PList=Posts.map(
+        (Posts)=>
     <li className="card" key={Posts.id}>
         <div className="post-content">
-            {Posts.postTitle}</div>
+           <h1>{Posts.postTitle}</h1> 
+           <span>
+               BY : {Posts.postOwnerUsername}<br/>
+               <time>
+                   {new Date(Posts.createdAt).toDateString()}
+               </time>
+           </span>
+        </div>
 
-        <div>
-            {Posts.postBody}</div>    
+        <div className="post-body">
+            {Posts.postBody}
+        </div>    
         <div className="post-button">
             <EditPost/><DeletePost/>
         </div>
-        </li>)
+        </li>
+        
+        )
     console.log({PList})
     return(
         <div>

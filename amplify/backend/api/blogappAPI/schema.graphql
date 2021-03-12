@@ -25,12 +25,3 @@ type Like @model {
 	likeOwnerUsername: String!
 	post: Post @connection(name: "PostLikes")
 }
-
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
-
-
-
